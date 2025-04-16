@@ -13,7 +13,7 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v3
 
-    - name: Set up Docker
+    - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v3
 
     - name: Log in to Docker Hub
@@ -22,10 +22,12 @@ jobs:
         username: ${{ secrets.DOCKER_USERNAME }}
         password: ${{ secrets.DOCKER_PASSWORD }}
 
-    - name: Build and push Docker image
+    - name: Build and push Docker image (linux/amd64)
       run: |
-        docker build -t apervachev/website-1:latest .
-        docker push apervachev/website-1:latest
+        docker buildx build \
+          --platform linux/amd64 \
+          -t apervachev/website-1:latest \
+          --push .
 
     - name: Deploy to Oracle VM via SSH
       uses: appleboy/ssh-action@v1.0.0
@@ -34,11 +36,4 @@ jobs:
         username: ubuntu
         key: ${{ secrets.ORACLE_SSH_KEY }}
         script: |
-          echo "===== DEBUG: Checking kubeconfig file exists ====="
-          ls -l /home/ubuntu/.kube/config || echo "Kubeconfig not found!"
-          
-          echo "===== DEBUG: Displaying first 5 lines of kubeconfig ====="
-          head -n 5 /home/ubuntu/.kube/config || echo "Unable to read kubeconfig"
-
-          echo "===== Rolling out new deployment ====="
           /usr/local/bin/kubectl --kubeconfig=/home/ubuntu/.kube/config rollout restart deployment website-1
