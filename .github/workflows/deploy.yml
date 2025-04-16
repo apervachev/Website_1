@@ -22,12 +22,13 @@ jobs:
         username: ${{ secrets.DOCKER_USERNAME }}
         password: ${{ secrets.DOCKER_PASSWORD }}
 
-    - name: Build and push Docker image (linux/amd64)
+    - name: Build and push Docker image (multi-arch)
       run: |
         docker buildx build \
-          --platform linux/amd64 \
+          --platform linux/amd64,linux/arm64 \
           -t apervachev/website-1:latest \
           --push .
+
 
     - name: Deploy to Oracle VM via SSH
       uses: appleboy/ssh-action@v1.0.0
