@@ -34,5 +34,6 @@ jobs:
         username: ubuntu
         key: ${{ secrets.ORACLE_SSH_KEY }}
         script: |
+          export KUBECONFIG=$HOME/.kube/config
           cd ~/k8s/website-1
           kubectl rollout restart deployment website-1
