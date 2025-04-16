@@ -34,7 +34,10 @@ jobs:
         username: ubuntu
         key: ${{ secrets.ORACLE_SSH_KEY }}
         script: |
-          cd /home/ubuntu/k8s/website-1
-          kubectl --kubeconfig=/home/ubuntu/.kube/config rollout restart deployment website-1
-
-
+          echo "===== DEBUG: Checking kubeconfig file exists ====="
+          ls -l /home/ubuntu/.kube/config
+          echo "===== DEBUG: Displaying first 5 lines of kubeconfig ====="
+          head -n 5 /home/ubuntu/.kube/config
+          
+          echo "===== Rolling out new deployment ====="
+          /usr/local/bin/kubectl --kubeconfig=/home/ubuntu/.kube/config rollout restart deployment website-1
